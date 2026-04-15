@@ -1,0 +1,87 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start App Locally",
+            "dependsOn": [
+                "Validate prerequisites",
+                "Provision",
+                "Deploy",
+                "Start application"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "Validate prerequisites",
+            "type": "teamsfx",
+            "command": "debug-check-prerequisites",
+            "args": {
+                "prerequisites": [
+                    "nodejs",
+                    "m365Account",
+                    "portOccupancy"
+                ],
+                "portOccupancy": [
+                    5173
+                ]
+            }
+        },
+        {
+            "label": "Provision",
+            "type": "teamsfx",
+            "command": "provision",
+            "args": {
+                "env": "local"
+            }
+        },
+        {
+            "label": "Deploy",
+            "type": "teamsfx",
+            "command": "deploy",
+            "args": {
+                "env": "local"
+            }
+        },
+        {
+            "label": "Start application",
+            "type": "shell",
+            "command": "npm run dev",
+            "isBackground": true,
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^.*$",
+                    "file": 0,
+                    "location": 1,
+                    "message": 2
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*",
+                    "endsPattern": "ready in|VITE v"
+                }
+            }
+        },
+        {
+            "label": "Start App in Desktop Client",
+            "dependsOn": [
+                "Validate prerequisites",
+                "Provision",
+                "Deploy",
+                "Start application",
+                "Start desktop client"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "Start desktop client",
+            "type": "teamsfx",
+            "command": "launch-desktop-client",
+            "args": {
+                "url": "teams.microsoft.com/l/app/${{local:TEAMS_APP_ID}}?installAppPackage=true"
+            }
+        }
+    ]
+}
