@@ -17,6 +17,9 @@ const useStyles = makeStyles({
     ...shorthands.padding("20px"),
     minHeight: "100vh",
     backgroundColor: tokens.colorNeutralBackground1,
+    width: "100%",
+    maxWidth: "800px",
+    margin: "0 auto",
   },
   header: {
     display: "flex",
@@ -102,6 +105,11 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground3,
     fontStyle: "italic",
     marginTop: "8px",
+  },
+  primaryButton: {
+    minHeight: "56px",
+    fontSize: "16px",
+    fontWeight: 600,
   },
 });
 
@@ -210,7 +218,7 @@ export const Configuracion: React.FC<ConfiguracionProps> = ({ onBack }) => {
           ) : error ? (
             <Card className={styles.errorCard}>
               <p className={styles.errorMessage}>{error}</p>
-              <Button appearance="primary" onClick={fetchUserInfo}>
+              <Button appearance="primary" className={styles.primaryButton} onClick={fetchUserInfo}>
                 Reintentar
               </Button>
               <p className={styles.infoText}>

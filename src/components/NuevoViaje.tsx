@@ -17,6 +17,9 @@ const useStyles = makeStyles({
     ...shorthands.padding("20px"),
     minHeight: "100vh",
     backgroundColor: tokens.colorNeutralBackground1,
+    width: "100%",
+    maxWidth: "800px",
+    margin: "0 auto",
   },
   header: {
     display: "flex",
@@ -34,7 +37,6 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     ...shorthands.gap("20px"),
-    maxWidth: "800px",
     width: "100%",
   },
   textarea: {
@@ -43,6 +45,16 @@ const useStyles = makeStyles({
   buttonGroup: {
     display: "flex",
     ...shorthands.gap("12px"),
+    flexWrap: "wrap",
+  },
+  primaryButton: {
+    minHeight: "56px",
+    fontSize: "16px",
+    fontWeight: 600,
+  },
+  secondaryButton: {
+    minHeight: "56px",
+    fontSize: "16px",
   },
   spinnerContainer: {
     display: "flex",
@@ -204,6 +216,7 @@ export const NuevoViaje: React.FC<NuevoViajeProps> = ({ onBack, onNavigate }) =>
             <div className={styles.buttonGroup}>
               <Button
                 appearance="primary"
+                className={styles.primaryButton}
                 onClick={handleExtraerDatos}
                 disabled={isLoading || !correoSAP.trim()}
               >
@@ -228,6 +241,7 @@ export const NuevoViaje: React.FC<NuevoViajeProps> = ({ onBack, onNavigate }) =>
             </div>
             <Button
               appearance="secondary"
+              className={styles.secondaryButton}
               onClick={handleReintentar}
             >
               Reintentar
@@ -262,12 +276,14 @@ export const NuevoViaje: React.FC<NuevoViajeProps> = ({ onBack, onNavigate }) =>
             <div className={styles.buttonGroup}>
               <Button
                 appearance="primary"
+                className={styles.primaryButton}
                 onClick={handleAñadirTicket}
               >
                 Añadir ticket
               </Button>
               <Button
                 appearance="secondary"
+                className={styles.secondaryButton}
                 onClick={onBack}
               >
                 Volver al inicio

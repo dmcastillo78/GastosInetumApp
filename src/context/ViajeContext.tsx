@@ -22,8 +22,6 @@ interface ViajeContextType {
 
 const ViajeContext = createContext<ViajeContextType | undefined>(undefined);
 
-const STORAGE_KEY = "gastos_viaje_activo";
-
 interface ViajeProviderProps {
   children: ReactNode;
 }
@@ -32,10 +30,12 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
   const [viajeActivo, setViajeActivoState] = useState<ViajeActivo | null>(null);
   const [isLoadingViaje, setIsLoadingViaje] = useState(true);
   
-  // MSAL temporalmente deshabilitado - userEmail hardcodeado
-  // const { userEmail, isAuthenticated } = useAuth();
-  const userEmail = "david.moreno-castillo@inetum.com";
-  const isAuthenticated = true;
+  // Login con PIN - leer de localStorage
+  const userEmail = localStorage.getItem("userEmail");
+  const isAuthenticated = !!userEmail;
+  
+  // Clave de localStorage específica por usuario
+  const getStorageKey = () => userEmail ? `viajeActivo_${userEmail}` : "viajeActivo_default";
 
   // Cargar viaje activo al montar
   useEffect(() => {
@@ -47,8 +47,10 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
       }
 
       try {
+        const storageKey = getStorageKey();
+        
         // Intentar cargar desde localStorage primero
-        const storedViaje = localStorage.getItem(STORAGE_KEY);
+        const storedViaje = localStorage.getItem(storageKey);
         if (storedViaje) {
           const viaje = JSON.parse(storedViaje) as ViajeActivo;
           setViajeActivoState(viaje);
@@ -66,11 +68,11 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
             fechaFin: data.fechaFin,
             ceco: data.ceco,
           };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(viaje));
+          localStorage.setItem(storageKey, JSON.stringify(viaje));
           setViajeActivoState(viaje);
         } else {
           // No hay viaje activo en el servidor
-          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(storageKey);
           setViajeActivoState(null);
         }
       } catch (error) {
@@ -86,7 +88,8 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
 
   const setViajeActivo = (viaje: ViajeActivo) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(viaje));
+      const storageKey = getStorageKey();
+      localStorage.setItem(storageKey, JSON.stringify(viaje));
       setViajeActivoState(viaje);
     } catch (error) {
       console.error("Error al guardar viaje en localStorage:", error);
@@ -95,7 +98,8 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
 
   const clearViajeActivo = () => {
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      const storageKey = getStorageKey();
+      localStorage.removeItem(storageKey);
       setViajeActivoState(null);
     } catch (error) {
       console.error("Error al limpiar viaje de localStorage:", error);
@@ -110,6 +114,7 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
 
     setIsLoadingViaje(true);
     try {
+      const storageKey = getStorageKey();
       const data = await flowService.obtenerViajeActivo({ userEmail });
 
       if (data.found === true && data.id) {
@@ -120,10 +125,10 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
           fechaFin: data.fechaFin,
           ceco: data.ceco,
         };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(viaje));
+        localStorage.setItem(storageKey, JSON.stringify(viaje));
         setViajeActivoState(viaje);
       } else {
-        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(storageKey);
         setViajeActivoState(null);
       }
     } catch (error) {

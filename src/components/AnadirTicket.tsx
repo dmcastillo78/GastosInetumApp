@@ -23,6 +23,9 @@ const useStyles = makeStyles({
     ...shorthands.padding("20px"),
     minHeight: "100vh",
     backgroundColor: tokens.colorNeutralBackground1,
+    width: "100%",
+    maxWidth: "800px",
+    margin: "0 auto",
   },
   header: {
     display: "flex",
@@ -49,7 +52,6 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     ...shorthands.gap("20px"),
-    maxWidth: "800px",
     width: "100%",
   },
   uploadArea: {
@@ -63,15 +65,26 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground2,
   },
   imagePreview: {
-    maxWidth: "100%",
-    maxHeight: "300px",
+    width: "100%",
+    maxHeight: "400px",
+    objectFit: "contain",
     ...shorthands.borderRadius("8px"),
     ...shorthands.border("1px", "solid", tokens.colorNeutralStroke1),
+    backgroundColor: tokens.colorNeutralBackground3,
   },
   buttonGroup: {
     display: "flex",
     ...shorthands.gap("12px"),
     flexWrap: "wrap",
+  },
+  primaryButton: {
+    minHeight: "56px",
+    fontSize: "16px",
+    fontWeight: 600,
+  },
+  secondaryButton: {
+    minHeight: "56px",
+    fontSize: "16px",
   },
   spinnerContainer: {
     display: "flex",
@@ -88,6 +101,18 @@ const useStyles = makeStyles({
   label: {
     fontWeight: 600,
     color: tokens.colorNeutralForeground1,
+    fontSize: "16px",
+  },
+  largeInput: {
+    minHeight: "56px",
+    fontSize: "16px",
+    "& input": {
+      fontSize: "16px",
+    },
+  },
+  largeDropdown: {
+    minHeight: "56px",
+    fontSize: "16px",
   },
   errorMessage: {
     display: "flex",
@@ -349,7 +374,7 @@ export const AnadirTicket: React.FC<AnadirTicketProps> = ({ onBack }) => {
           <span style={{ fontSize: "20px" }}>⚠️</span>
           <strong>No hay viaje activo</strong>
           <p>Debes crear un viaje primero antes de añadir tickets.</p>
-          <Button appearance="primary" onClick={onBack}>
+          <Button appearance="primary" className={styles.primaryButton} onClick={onBack}>
             Volver al inicio
           </Button>
         </div>
@@ -393,6 +418,7 @@ Viaje:
               
               <Button
                 appearance="primary"
+                className={styles.primaryButton}
                 icon={<Camera20Regular />}
                 onClick={() => fileInputRef.current?.click()}
               >
@@ -407,6 +433,7 @@ Viaje:
                 <div className={styles.formField}>
                   <label className={styles.label}>Tipo de gasto *</label>
                   <Dropdown
+                    className={styles.largeDropdown}
                     placeholder="Selecciona un tipo"
                     value={tipoGasto}
                     selectedOptions={tipoGasto ? [tipoGasto] : []}
@@ -424,6 +451,7 @@ Viaje:
                 <div className={styles.buttonGroup}>
                   <Button
                     appearance="primary"
+                    className={styles.primaryButton}
                     onClick={handleExtraerDatos}
                     disabled={!tipoGasto}
                   >
@@ -431,12 +459,14 @@ Viaje:
                   </Button>
                   <Button
                     appearance="secondary"
+                    className={styles.secondaryButton}
                     onClick={handleRepetir}
                   >
                     Cambiar imagen
                   </Button>
                   <Button
                     appearance="secondary"
+                    className={styles.secondaryButton}
                     onClick={onBack}
                   >
                     Cancelar
@@ -460,7 +490,7 @@ Viaje:
           <div className={styles.errorMessage}>
             <span style={{ fontSize: "24px" }}>⚠️</span>
             <strong>{error}</strong>
-            <Button appearance="secondary" onClick={handleReintentar}>
+            <Button appearance="secondary" className={styles.secondaryButton} onClick={handleReintentar}>
               Reintentar
             </Button>
           </div>
@@ -486,6 +516,7 @@ Viaje:
             <div className={styles.formField}>
               <label className={styles.label}>Fecha</label>
               <Input
+                className={styles.largeInput}
                 type="date"
                 value={datosTicket.fecha}
                 onChange={(_e, data) => setDatosTicket({ ...datosTicket, fecha: data.value })}
@@ -495,6 +526,7 @@ Viaje:
             <div className={styles.formField}>
               <label className={styles.label}>Tipo de gasto *</label>
               <Dropdown
+                className={styles.largeDropdown}
                 placeholder="Selecciona un tipo"
                 value={datosTicket.tipo_gasto}
                 selectedOptions={datosTicket.tipo_gasto ? [datosTicket.tipo_gasto] : []}
@@ -514,6 +546,7 @@ Viaje:
             <div className={styles.formField}>
               <label className={styles.label}>Importe (€)</label>
               <Input
+                className={styles.largeInput}
                 type="number"
                 step="0.01"
                 value={datosTicket.importe}
@@ -524,6 +557,7 @@ Viaje:
             <div className={styles.formField}>
               <label className={styles.label}>Descripción</label>
               <Input
+                className={styles.largeInput}
                 value={datosTicket.descripcion}
                 onChange={(_e, data) => setDatosTicket({ ...datosTicket, descripcion: data.value })}
               />
@@ -532,6 +566,7 @@ Viaje:
             <div className={styles.buttonGroup}>
               <Button
                 appearance="primary"
+                className={styles.primaryButton}
                 onClick={handleActualizarTicket}
                 disabled={!ticketId || !datosTicket.tipo_gasto}
               >
@@ -539,6 +574,7 @@ Viaje:
               </Button>
               <Button
                 appearance="secondary"
+                className={styles.secondaryButton}
                 onClick={onBack}
               >
                 Volver
