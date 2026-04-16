@@ -14,6 +14,10 @@ import {
 } from "@fluentui/react-icons";
 import { useViaje } from "../context/ViajeContext";
 
+// MSAL temporalmente deshabilitado
+// import { useMsal, useIsAuthenticated } from "@azure/msal-react";
+// import { graphScopes } from "../authConfig";
+
 const useStyles = makeStyles({
   container: {
     display: "flex",
@@ -105,12 +109,14 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
   return (
     <div className={styles.container}>
+      {/* Botón Configuración */}
       <Button
         appearance="subtle"
         icon={<Settings20Regular />}
         onClick={() => onNavigate("configuracion")}
         className={styles.settingsButton}
       />
+
       <div className={styles.header}>
         <h1 className={styles.title}>Gestión de Gastos Inetum</h1>
         <p className={styles.subtitle}>¿Qué quieres hacer?</p>

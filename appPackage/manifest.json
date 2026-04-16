@@ -1,48 +1,38 @@
 {
-    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.25/MicrosoftTeams.schema.json",
-    "manifestVersion": "1.25",
-    "version": "1.0.0",
-    "id": "${{TEAMS_APP_ID}}",
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.17",
+    "version": "0.1.0",
+    "id": "def85565-34b3-4d63-8b54-cc0879e73462",
     "developer": {
-        "name": "My App, Inc.",
-        "websiteUrl": "https://www.example.com",
-        "privacyUrl": "https://www.example.com/privacy",
-        "termsOfUseUrl": "https://www.example.com/termsofuse"
+        "name": "David Moreno",
+        "websiteUrl": "https://dmcastillo78.github.io/GastosInetumApp/",
+        "privacyUrl": "https://dmcastillo78.github.io/GastosInetumApp/",
+        "termsOfUseUrl": "https://dmcastillo78.github.io/GastosInetumApp/"
+    },
+    "name": {
+        "short": "GastosInetum",
+        "full": "Gestión de gastos y liquidaciones"
+    },
+    "description": {
+        "short": "Gestión de gastos y liquidaciones de viaje",
+        "full": "Aplicación para el registro de tickets y generación de documentos para liquidaciones de viaje"
     },
     "icons": {
         "color": "color.png",
         "outline": "outline.png"
     },
-    "name": {
-        "short": "GastosInetumApp${{APP_NAME_SUFFIX}}",
-        "full": "Full name for GastosInetumApp"
-    },
-    "description": {
-        "short": "Short description of GastosInetumApp",
-        "full": "Full description of GastosInetumApp"
-    },
     "accentColor": "#FFFFFF",
-    "supportsChannelFeatures": "tier1",
-    "bots": [],
-    "composeExtensions": [],
     "staticTabs": [
         {
-            "entityId": "index0",
-            "name": "Home",
-            "contentUrl": "${{TAB_ENDPOINT}}/tabs/home",
-            "websiteUrl": "${{TAB_ENDPOINT}}/tabs/home",
-            "scopes": [
-                "personal",
-                "groupChat",
-                "team"
-            ]
+            "entityId": "gastos",
+            "name": "Gastos",
+            "contentUrl": "https://dmcastillo78.github.io/GastosInetumApp/",
+            "websiteUrl": "https://dmcastillo78.github.io/GastosInetumApp/",
+            "scopes": ["personal"]
         }
     ],
-    "permissions": [
-        "identity",
-        "messageTeamMembers"
-    ],
+    "permissions": ["identity", "messageTeamMembers"],
     "validDomains": [
-        "${{TAB_DOMAIN}}"
+        "dmcastillo78.github.io"
     ]
 }

@@ -1,4 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { flowService } from "../services/flowService";
+
+// MSAL temporalmente deshabilitado - userEmail hardcodeado
+// import { useAuth } from "./AuthContext";
 
 export interface ViajeActivo {
   id: string;
@@ -13,6 +17,7 @@ interface ViajeContextType {
   isLoadingViaje: boolean;
   setViajeActivo: (viaje: ViajeActivo) => void;
   clearViajeActivo: () => void;
+  recargarViajeActivo: () => Promise<void>;
 }
 
 const ViajeContext = createContext<ViajeContextType | undefined>(undefined);
@@ -26,10 +31,21 @@ interface ViajeProviderProps {
 export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
   const [viajeActivo, setViajeActivoState] = useState<ViajeActivo | null>(null);
   const [isLoadingViaje, setIsLoadingViaje] = useState(true);
+  
+  // MSAL temporalmente deshabilitado - userEmail hardcodeado
+  // const { userEmail, isAuthenticated } = useAuth();
+  const userEmail = "david.moreno-castillo@inetum.com";
+  const isAuthenticated = true;
 
   // Cargar viaje activo al montar
   useEffect(() => {
     const cargarViajeActivo = async () => {
+      // Solo cargar si el usuario está autenticado
+      if (!isAuthenticated || !userEmail) {
+        setIsLoadingViaje(false);
+        return;
+      }
+
       try {
         // Intentar cargar desde localStorage primero
         const storedViaje = localStorage.getItem(STORAGE_KEY);
@@ -38,42 +54,24 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
           setViajeActivoState(viaje);
         }
 
-        // Verificar con el servidor
-        const response = await fetch(
-          "https://cb2d3297d484eb42ae60646399e38f.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/da0f7e2ba61a4a489c74a8da3dc9d7b2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YRqHO6NwtLLUalM1-iItLFp84LRoQpuyrEUVKIEe_4I",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              userEmail: "david.moreno-castillo@inetum.com",
-            }),
-          }
-        );
+        // Verificar con el servidor usando el servicio
+        const data = await flowService.obtenerViajeActivo({ userEmail });
 
-        if (response.ok) {
-          const data = await response.json();
-          
-          if (data.found === true && data.id) {
-            // Viaje encontrado, actualizar estado y localStorage
-            const viaje: ViajeActivo = {
-              id: data.id,
-              numViaje: data.numViaje,
-              fechaInicio: data.fechaInicio,
-              fechaFin: data.fechaFin,
-              ceco: data.ceco,
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(viaje));
-            setViajeActivoState(viaje);
-          } else {
-            // No hay viaje activo en el servidor
-            localStorage.removeItem(STORAGE_KEY);
-            setViajeActivoState(null);
-          }
+        if (data.found === true && data.id) {
+          // Viaje encontrado, actualizar estado y localStorage
+          const viaje: ViajeActivo = {
+            id: data.id,
+            numViaje: data.numViaje,
+            fechaInicio: data.fechaInicio,
+            fechaFin: data.fechaFin,
+            ceco: data.ceco,
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(viaje));
+          setViajeActivoState(viaje);
         } else {
-          console.warn("Error al verificar viaje activo en el servidor");
-          // Mantener el viaje de localStorage si existe
+          // No hay viaje activo en el servidor
+          localStorage.removeItem(STORAGE_KEY);
+          setViajeActivoState(null);
         }
       } catch (error) {
         console.error("Error al cargar viaje activo:", error);
@@ -84,7 +82,7 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
     };
 
     cargarViajeActivo();
-  }, []);
+  }, [isAuthenticated, userEmail]);
 
   const setViajeActivo = (viaje: ViajeActivo) => {
     try {
@@ -104,6 +102,37 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
     }
   };
 
+  const recargarViajeActivo = async () => {
+    if (!userEmail) {
+      console.warn("No hay usuario autenticado para recargar viaje");
+      return;
+    }
+
+    setIsLoadingViaje(true);
+    try {
+      const data = await flowService.obtenerViajeActivo({ userEmail });
+
+      if (data.found === true && data.id) {
+        const viaje: ViajeActivo = {
+          id: data.id,
+          numViaje: data.numViaje,
+          fechaInicio: data.fechaInicio,
+          fechaFin: data.fechaFin,
+          ceco: data.ceco,
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(viaje));
+        setViajeActivoState(viaje);
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+        setViajeActivoState(null);
+      }
+    } catch (error) {
+      console.error("Error al recargar viaje activo:", error);
+    } finally {
+      setIsLoadingViaje(false);
+    }
+  };
+
   return (
     <ViajeContext.Provider
       value={{
@@ -111,6 +140,7 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
         isLoadingViaje,
         setViajeActivo,
         clearViajeActivo,
+        recargarViajeActivo,
       }}
     >
       {children}

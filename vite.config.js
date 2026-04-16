@@ -2,9 +2,9 @@ import react from "@vitejs/plugin-react";
 import fs from "fs";
 import { defineConfig } from "vite";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
-  base: "/tabs/home",
+  base: mode === 'production' ? '/GastosInetumApp/' : '/tabs/home/',
   esbuild: {
     tsconfigRaw: fs.readFileSync("./tsconfig.app.json"),
   },
@@ -15,4 +15,4 @@ export default defineConfig({
       key: fs.readFileSync("/Users/david/.fx/certificate/localhost.key"),
     },
   },
-});
+}));
