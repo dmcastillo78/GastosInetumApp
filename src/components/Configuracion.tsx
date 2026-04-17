@@ -24,12 +24,13 @@ const useStyles = makeStyles({
   container: {
     display: "flex",
     flexDirection: "column",
-    ...shorthands.padding("20px"),
+    ...shorthands.padding("16px"),
     paddingBottom: "80px",
     backgroundColor: tokens.colorNeutralBackground1,
     width: "100%",
-    maxWidth: "800px",
+    maxWidth: "100%",
     margin: "0 auto",
+    boxSizing: "border-box",
   },
   header: {
     display: "flex",
@@ -47,7 +48,7 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     ...shorthands.gap("24px"),
-    maxWidth: "800px",
+    maxWidth: "100%",
     width: "100%",
   },
   section: {
@@ -168,7 +169,7 @@ export const Configuracion: React.FC<ConfiguracionProps> = ({ onBack }) => {
   const { dispatchToast } = useToastController(toasterId);
 
   const userEmail = localStorage.getItem("userEmail") || "No configurado";
-  const userName = "David Moreno Castillo";
+  const userName = localStorage.getItem("userName") || "Usuario";
 
   // Handler para limpiar caché local
   const handleLimpiarCache = () => {

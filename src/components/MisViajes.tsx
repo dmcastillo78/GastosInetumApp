@@ -27,12 +27,13 @@ const useStyles = makeStyles({
   container: {
     display: "flex",
     flexDirection: "column",
-    ...shorthands.padding("20px"),
+    ...shorthands.padding("16px"),
     paddingBottom: "80px",
     backgroundColor: tokens.colorNeutralBackground1,
     width: "100%",
-    maxWidth: "800px",
+    maxWidth: "100%",
     margin: "0 auto",
+    boxSizing: "border-box",
   },
   header: {
     display: "flex",

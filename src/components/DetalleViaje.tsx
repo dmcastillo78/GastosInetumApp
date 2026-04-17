@@ -25,6 +25,13 @@ import {
   useToastController,
   Toaster,
   useId,
+  Dialog,
+  DialogSurface,
+  DialogTitle,
+  DialogBody,
+  DialogActions,
+  DialogContent,
+  Input,
 } from "@fluentui/react-components";
 import {
   ArrowLeft20Regular,
@@ -36,6 +43,9 @@ import {
   DocumentTable20Regular,
   DocumentText20Regular,
   Copy20Regular,
+  Food20Regular,
+  ChevronLeft20Regular,
+  ChevronRight20Regular,
 } from "@fluentui/react-icons";
 import { useViaje } from "../context/ViajeContext";
 
@@ -43,12 +53,13 @@ const useStyles = makeStyles({
   container: {
     display: "flex",
     flexDirection: "column",
-    ...shorthands.padding("20px"),
+    ...shorthands.padding("16px"),
     paddingBottom: "120px",
     backgroundColor: tokens.colorNeutralBackground1,
     width: "100%",
-    maxWidth: "800px",
+    maxWidth: "100%",
     margin: "0 auto",
+    boxSizing: "border-box",
   },
   header: {
     display: "flex",
@@ -134,10 +145,11 @@ const useStyles = makeStyles({
     ...shorthands.gap("12px"),
   },
   actionButton: {
-    minHeight: "56px",
+    minHeight: "48px",
     fontSize: "16px",
     fontWeight: 600,
     justifyContent: "flex-start",
+    width: "100%",
   },
   documentList: {
     display: "flex",
@@ -242,6 +254,28 @@ const OBTENER_IMAGENES_BASE64_URL = "https://cb2d3297d484eb42ae60646399e38f.fe.e
 // URL del flow para subir Excel a OneDrive
 const SUBIR_EXCEL_URL = "https://cb2d3297d484eb42ae60646399e38f.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/37d5b72ed12045c6921181231bd289b8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=LXLSC-jrQw5Mxi96VEGtnCOpkVQJ70l-SHK3PhOHQPM";
 
+// URL del flow para crear nuevo ticket
+const NUEVO_TICKET_URL = "https://cb2d3297d484eb42ae60646399e38f.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/7edc6b71d4be4664a060f80f5cf8851c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NMHIIN9B1e3o0FpOUhsIWplXRGiimCFrKoCO-Dnk7HY";
+
+// URL del flow para actualizar ticket
+const ACTUALIZAR_TICKET_URL = "https://cb2d3297d484eb42ae60646399e38f.fe.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6fb9ea620fd44f258283ca13cb7e3cdb/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0B_B_Yh_miKGgHB_EWFLus9xBdzLUGe8KluNzLjtz5U";
+
+// Helper para convertir URL de OneDrive de descarga a visualización web
+const convertirUrlExcelParaVisualizacion = (url: string): string => {
+  if (!url) return url;
+  
+  // Si la URL ya tiene el parámetro web=1, no hacer nada
+  if (url.includes('web=1')) return url;
+  
+  // Si la URL tiene otros parámetros, agregar &web=1
+  if (url.includes('?')) {
+    return url + '&web=1';
+  }
+  
+  // Si no tiene parámetros, agregar ?web=1
+  return url + '?web=1';
+};
+
 // Interface para tickets del flow
 interface TicketFlow {
   cr468_ticketid: string;
@@ -316,25 +350,32 @@ export const DetalleViaje: React.FC<DetalleViajeProps> = ({ onBack, onNavigate }
   });
   
   const [urlSAP, setUrlSAP] = useState<string | null>(urlSAPInicial);
-  const [urlExcel, setUrlExcel] = useState<string | null>(viajeActivo?.excelGenerado || null);
+  const [urlExcel, setUrlExcel] = useState<string | null>(
+    viajeActivo?.excelGenerado ? convertirUrlExcelParaVisualizacion(viajeActivo.excelGenerado) : null
+  );
   const [isUploadingSAP, setIsUploadingSAP] = useState(false);
   const [isGeneratingExcel, setIsGeneratingExcel] = useState(false);
   const [isGeneratingZIP, setIsGeneratingZIP] = useState(false);
   const [zipProgress, setZipProgress] = useState<string>("");
 
-  // Cargar tickets del viaje al montar el componente
-  useEffect(() => {
-    const cargarTickets = async () => {
-      if (!viajeActivo?.id) {
-        setIsLoadingTickets(false);
-        return;
-      }
+  // Estados para dietas
+  const [isDietaDialogOpen, setIsDietaDialogOpen] = useState(false);
+  const [tipoDieta, setTipoDieta] = useState<"completa" | "media">("completa");
+  const [fechaDieta, setFechaDieta] = useState<string>("");
+  const [isAddingDieta, setIsAddingDieta] = useState(false);
 
-      setIsLoadingTickets(true);
-      setTicketsError(null);
+  // Función para cargar tickets (extraída para poder reutilizarla)
+  const cargarTickets = async () => {
+    if (!viajeActivo?.id) {
+      setIsLoadingTickets(false);
+      return;
+    }
 
-      try {
-        const userEmail = localStorage.getItem("userEmail") || "david.moreno-castillo@inetum.com";
+    setIsLoadingTickets(true);
+    setTicketsError(null);
+
+    try {
+      const userEmail = localStorage.getItem("userEmail") || "david.moreno-castillo@inetum.com";
         
         const response = await fetch(LISTAR_TICKETS_URL, {
           method: "POST",
@@ -406,8 +447,10 @@ export const DetalleViaje: React.FC<DetalleViajeProps> = ({ onBack, onNavigate }
       } finally {
         setIsLoadingTickets(false);
       }
-    };
+  };
 
+  // Cargar tickets del viaje al montar el componente
+  useEffect(() => {
     cargarTickets();
   }, [viajeActivo?.id]);
 
@@ -431,7 +474,7 @@ export const DetalleViaje: React.FC<DetalleViajeProps> = ({ onBack, onNavigate }
       }
       
       if (viajeActivo.excelGenerado) {
-        setUrlExcel(viajeActivo.excelGenerado);
+        setUrlExcel(convertirUrlExcelParaVisualizacion(viajeActivo.excelGenerado));
       } else {
         setUrlExcel(null);
       }
@@ -459,6 +502,166 @@ export const DetalleViaje: React.FC<DetalleViajeProps> = ({ onBack, onNavigate }
         </Toast>,
         { intent: "error", timeout: 2000 }
       );
+    }
+  };
+
+  // Helper para abrir diálogo de dieta
+  const handleOpenDietaDialog = (tipo: "completa" | "media") => {
+    setTipoDieta(tipo);
+    // Inicializar con fecha de inicio del viaje
+    if (viajeActivo?.fechaInicio) {
+      const fecha = new Date(viajeActivo.fechaInicio);
+      const year = fecha.getFullYear();
+      const month = String(fecha.getMonth() + 1).padStart(2, "0");
+      const day = String(fecha.getDate()).padStart(2, "0");
+      setFechaDieta(`${year}-${month}-${day}`);
+    }
+    setIsDietaDialogOpen(true);
+  };
+
+  // Helper para cambiar fecha de dieta (día anterior)
+  const handleFechaDietaAnterior = () => {
+    if (!fechaDieta) return;
+    
+    const fechaActual = new Date(fechaDieta + "T00:00:00");
+    
+    // Restar un día
+    fechaActual.setDate(fechaActual.getDate() - 1);
+    
+    const year = fechaActual.getFullYear();
+    const month = String(fechaActual.getMonth() + 1).padStart(2, "0");
+    const day = String(fechaActual.getDate()).padStart(2, "0");
+    setFechaDieta(`${year}-${month}-${day}`);
+  };
+
+  // Helper para cambiar fecha de dieta (día siguiente)
+  const handleFechaDietaSiguiente = () => {
+    if (!fechaDieta) return;
+    
+    const fechaActual = new Date(fechaDieta + "T00:00:00");
+    
+    // Sumar un día
+    fechaActual.setDate(fechaActual.getDate() + 1);
+    
+    const year = fechaActual.getFullYear();
+    const month = String(fechaActual.getMonth() + 1).padStart(2, "0");
+    const day = String(fechaActual.getDate()).padStart(2, "0");
+    setFechaDieta(`${year}-${month}-${day}`);
+  };
+
+  // Handler para añadir dieta
+  const handleAñadirDieta = async () => {
+    if (!viajeActivo || !fechaDieta) {
+      dispatchToast(
+        <Toast>
+          <ToastTitle>⚠️ Debes seleccionar una fecha</ToastTitle>
+        </Toast>,
+        { intent: "warning", timeout: 2000 }
+      );
+      return;
+    }
+
+    // Mostrar aviso si la fecha está fuera del rango del viaje
+    const fechaSeleccionada = new Date(fechaDieta);
+    const fechaInicio = new Date(viajeActivo.fechaInicio);
+    const fechaFin = new Date(viajeActivo.fechaFin);
+
+    if (fechaSeleccionada < fechaInicio || fechaSeleccionada > fechaFin) {
+      dispatchToast(
+        <Toast>
+          <ToastTitle>ℹ️ Aviso: La fecha está fuera del periodo del viaje</ToastTitle>
+        </Toast>,
+        { intent: "info", timeout: 3000 }
+      );
+      // Continuar con la creación del ticket
+    }
+
+    setIsAddingDieta(true);
+
+    try {
+      const userEmail = localStorage.getItem("userEmail") || "david.moreno-castillo@inetum.com";
+      const tipoGasto = tipoDieta === "completa" ? "Dieta" : "Media Dieta";
+      const importe = tipoDieta === "completa" ? 58.92 : 29.46;
+
+      // Imagen dummy (píxel transparente 1x1 en base64)
+      const imagenDummy = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+
+      console.log("🍽️ Creando ticket de dieta...");
+
+      // 1. Crear ticket con el flow NUEVO_TICKET
+      const responseNuevo = await fetch(NUEVO_TICKET_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imagenBase64: imagenDummy,
+          viajeId: viajeActivo.id,
+          numViaje: viajeActivo.numViaje,
+          userEmail: userEmail,
+          tipoGasto: tipoGasto,
+        }),
+      });
+
+      if (!responseNuevo.ok) {
+        throw new Error(`Error al crear ticket: ${responseNuevo.status}`);
+      }
+
+      const dataNuevo = await responseNuevo.json();
+      const ticketId = dataNuevo.ticketId;
+
+      if (!ticketId) {
+        throw new Error("No se recibió ticketId del flow");
+      }
+
+      console.log("✅ Ticket creado con ID:", ticketId);
+
+      // 2. Actualizar ticket con fecha e importe
+      const responseActualizar = await fetch(ACTUALIZAR_TICKET_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ticketId: ticketId,
+          fecha: fechaDieta,
+          tipoGasto: tipoGasto,
+          importe: importe,
+          descripcion: tipoGasto,
+        }),
+      });
+
+      if (!responseActualizar.ok) {
+        throw new Error(`Error al actualizar ticket: ${responseActualizar.status}`);
+      }
+
+      console.log("✅ Ticket de dieta actualizado");
+
+      // 3. Recargar tickets (sin recargar toda la página)
+      await cargarTickets();
+
+      dispatchToast(
+        <Toast>
+          <ToastTitle>✅ {tipoGasto} añadida correctamente</ToastTitle>
+        </Toast>,
+        { intent: "success", timeout: 2000 }
+      );
+
+      setIsDietaDialogOpen(false);
+    } catch (err) {
+      console.error("❌ Error al añadir dieta:", err);
+      const errorMessage = err instanceof Error ? err.message : "Error desconocido";
+      dispatchToast(
+        <Toast>
+          <ToastTitle>❌ Error al añadir dieta</ToastTitle>
+          <p style={{ marginTop: '8px', fontSize: '13px' }}>
+            {errorMessage}
+          </p>
+        </Toast>,
+        { intent: "error", timeout: 5000 }
+      );
+    } finally {
+      setIsAddingDieta(false);
     }
   };
 
@@ -653,9 +856,8 @@ Gracias.`
         descripcion: ticket.descripcion,
       }));
 
-      // 3. Nombre del empleado (hardcodeado por ahora)
-      // TODO: obtener de MSAL account.name cuando esté activo
-      const nombreEmpleado = "David Moreno Castillo";
+      // 3. Nombre del empleado desde localStorage
+      const nombreEmpleado = localStorage.getItem("userName") || "Usuario";
       const userEmail = localStorage.getItem("userEmail") || "david.moreno-castillo@inetum.com";
 
       // 4. Generar Excel usando la plantilla
@@ -696,7 +898,7 @@ Gracias.`
         throw new Error("El flow no pudo subir el Excel");
       }
 
-      const urlExcelFinal = dataSubir.urlExcel;
+      const urlExcelFinal = convertirUrlExcelParaVisualizacion(dataSubir.urlExcel);
 
       // 6. Actualizar estado local
       setUrlExcel(urlExcelFinal);
@@ -1084,6 +1286,26 @@ Gracias.`
           >
             Añadir Ticket
           </Button>
+          
+          {/* Botones de dietas */}
+          <div style={{ display: "flex", gap: "8px", marginTop: "8px", width: "100%" }}>
+            <Button
+              appearance="secondary"
+              icon={<Food20Regular />}
+              onClick={() => handleOpenDietaDialog("completa")}
+              style={{ flex: 1 }}
+            >
+              Añadir Dieta (58,92€)
+            </Button>
+            <Button
+              appearance="secondary"
+              icon={<Food20Regular />}
+              onClick={() => handleOpenDietaDialog("media")}
+              style={{ flex: 1 }}
+            >
+              Añadir Media Dieta (29,46€)
+            </Button>
+          </div>
         </Card>
       </div>
 
@@ -1246,6 +1468,83 @@ Gracias.`
         </Accordion>
         </Card>
       </div>
+
+      {/* Diálogo para seleccionar fecha de dieta */}
+      <Dialog open={isDietaDialogOpen} onOpenChange={(_, data) => setIsDietaDialogOpen(data.open)}>
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>
+              {tipoDieta === "completa" ? "Añadir Dieta (58,92€)" : "Añadir Media Dieta (29,46€)"}
+            </DialogTitle>
+            <DialogContent>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "16px" }}>
+                <div>
+                  <label style={{ 
+                    display: "block", 
+                    marginBottom: "8px", 
+                    fontWeight: 600,
+                    fontSize: "14px"
+                  }}>
+                    Selecciona la fecha *
+                  </label>
+                  <div style={{ 
+                    display: "flex", 
+                    gap: "8px", 
+                    alignItems: "center",
+                    width: "100%" 
+                  }}>
+                    <Button
+                      appearance="subtle"
+                      icon={<ChevronLeft20Regular />}
+                      onClick={handleFechaDietaAnterior}
+                      disabled={isAddingDieta}
+                      title="Día anterior"
+                      style={{ minWidth: "40px" }}
+                    />
+                    <Input
+                      type="date"
+                      value={fechaDieta}
+                      onChange={(_, data) => setFechaDieta(data.value)}
+                      style={{ flex: 1 }}
+                    />
+                    <Button
+                      appearance="subtle"
+                      icon={<ChevronRight20Regular />}
+                      onClick={handleFechaDietaSiguiente}
+                      disabled={isAddingDieta}
+                      title="Día siguiente"
+                      style={{ minWidth: "40px" }}
+                    />
+                  </div>
+                  <div style={{ 
+                    fontSize: "12px", 
+                    color: tokens.colorNeutralForeground3,
+                    marginTop: "4px"
+                  }}>
+                    Recomendación: La fecha debería estar dentro del periodo del viaje
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button 
+                appearance="secondary" 
+                onClick={() => setIsDietaDialogOpen(false)}
+                disabled={isAddingDieta}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                appearance="primary" 
+                onClick={handleAñadirDieta}
+                disabled={!fechaDieta || isAddingDieta}
+              >
+                {isAddingDieta ? <Spinner size="tiny" /> : "Añadir"}
+              </Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
     </div>
   );
 };

@@ -20,12 +20,13 @@ const useStyles = makeStyles({
   container: {
     display: "flex",
     flexDirection: "column",
-    ...shorthands.padding("20px"),
+    ...shorthands.padding("16px"),
     minHeight: "100vh",
     backgroundColor: tokens.colorNeutralBackground1,
     width: "100%",
-    maxWidth: "800px",
+    maxWidth: "100%",
     margin: "0 auto",
+    boxSizing: "border-box",
   },
   header: {
     display: "flex",
@@ -69,15 +70,15 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    ...shorthands.gap("16px"),
-    ...shorthands.padding("32px"),
+    ...shorthands.gap("12px"),
+    ...shorthands.padding("20px"),
     ...shorthands.border("2px", "dashed", tokens.colorNeutralStroke1),
     ...shorthands.borderRadius("8px"),
     backgroundColor: tokens.colorNeutralBackground2,
   },
   imagePreview: {
     width: "100%",
-    maxHeight: "400px",
+    maxHeight: "300px",
     objectFit: "contain",
     ...shorthands.borderRadius("8px"),
     ...shorthands.border("1px", "solid", tokens.colorNeutralStroke1),
@@ -85,17 +86,20 @@ const useStyles = makeStyles({
   },
   buttonGroup: {
     display: "flex",
+    flexDirection: "column",
     ...shorthands.gap("12px"),
-    flexWrap: "wrap",
+    width: "100%",
   },
   primaryButton: {
-    minHeight: "56px",
+    minHeight: "48px",
     fontSize: "16px",
     fontWeight: 600,
+    width: "100%",
   },
   secondaryButton: {
-    minHeight: "56px",
+    minHeight: "48px",
     fontSize: "16px",
+    width: "100%",
   },
   spinnerContainer: {
     display: "flex",
@@ -115,15 +119,17 @@ const useStyles = makeStyles({
     fontSize: "16px",
   },
   largeInput: {
-    minHeight: "56px",
+    minHeight: "48px",
     fontSize: "16px",
+    width: "100%",
     "& input": {
       fontSize: "16px",
     },
   },
   largeDropdown: {
-    minHeight: "56px",
+    minHeight: "48px",
     fontSize: "16px",
+    width: "100%",
   },
   errorMessage: {
     display: "flex",
@@ -454,11 +460,13 @@ export const AnadirTicket: React.FC<AnadirTicketProps> = ({ onBack }) => {
                     selectedOptions={tipoGasto ? [tipoGasto] : []}
                     onOptionSelect={(_e, data) => setTipoGasto(data.optionValue || "")}
                   >
-                    <Option value="Hotel">Hotel</Option>
-                    <Option value="Vuelo">Vuelo</Option>
+                    <Option value="Avión">Avión</Option>
+                    <Option value="Tren">Tren</Option>
                     <Option value="Taxi">Taxi</Option>
                     <Option value="Comida">Comida</Option>
                     <Option value="Parking">Parking</Option>
+                    <Option value="Dieta">Dieta</Option>
+                    <Option value="Media Dieta">Media Dieta</Option>
                     <Option value="Otros">Otros</Option>
                   </Dropdown>
                 </div>
@@ -549,11 +557,13 @@ export const AnadirTicket: React.FC<AnadirTicketProps> = ({ onBack }) => {
                   setDatosTicket({ ...datosTicket, tipo_gasto: data.optionValue || "" })
                 }
               >
-                <Option value="Hotel">Hotel</Option>
-                <Option value="Vuelo">Vuelo</Option>
+                <Option value="Avión">Avión</Option>
+                <Option value="Tren">Tren</Option>
                 <Option value="Taxi">Taxi</Option>
                 <Option value="Comida">Comida</Option>
                 <Option value="Parking">Parking</Option>
+                <Option value="Dieta">Dieta</Option>
+                <Option value="Media Dieta">Media Dieta</Option>
                 <Option value="Otros">Otros</Option>
               </Dropdown>
             </div>
@@ -590,9 +600,9 @@ export const AnadirTicket: React.FC<AnadirTicketProps> = ({ onBack }) => {
               <Button
                 appearance="secondary"
                 className={styles.secondaryButton}
-                onClick={onBack}
+                onClick={handleRepetir}
               >
-                Volver
+                Añadir otro ticket
               </Button>
             </div>
           </>

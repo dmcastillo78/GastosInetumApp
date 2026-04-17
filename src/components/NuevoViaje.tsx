@@ -14,12 +14,13 @@ const useStyles = makeStyles({
   container: {
     display: "flex",
     flexDirection: "column",
-    ...shorthands.padding("20px"),
+    ...shorthands.padding("16px"),
     minHeight: "100vh",
     backgroundColor: tokens.colorNeutralBackground1,
     width: "100%",
-    maxWidth: "800px",
+    maxWidth: "100%",
     margin: "0 auto",
+    boxSizing: "border-box",
   },
   header: {
     display: "flex",
@@ -44,17 +45,20 @@ const useStyles = makeStyles({
   },
   buttonGroup: {
     display: "flex",
+    flexDirection: "column",
     ...shorthands.gap("12px"),
-    flexWrap: "wrap",
+    width: "100%",
   },
   primaryButton: {
-    minHeight: "56px",
+    minHeight: "48px",
     fontSize: "16px",
     fontWeight: 600,
+    width: "100%",
   },
   secondaryButton: {
-    minHeight: "56px",
+    minHeight: "48px",
     fontSize: "16px",
+    width: "100%",
   },
   spinnerContainer: {
     display: "flex",

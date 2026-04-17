@@ -18,16 +18,17 @@ const useStyles = makeStyles({
     justifyContent: "center",
     minHeight: "100vh",
     backgroundColor: tokens.colorNeutralBackground1,
-    ...shorthands.padding("20px"),
+    ...shorthands.padding("16px"),
   },
   card: {
     width: "100%",
-    maxWidth: "400px",
-    ...shorthands.padding("32px", "24px"),
+    maxWidth: "100%",
+    ...shorthands.padding("32px", "20px"),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     ...shorthands.gap("24px"),
+    boxSizing: "border-box",
   },
   iconContainer: {
     width: "64px",
@@ -75,7 +76,7 @@ const useStyles = makeStyles({
 
 // Tabla de usuarios hardcodeada
 const USERS = [
-  { pin: "1234", email: "david.moreno-castillo@inetum.com", nombre: "David Moreno" },
+  { pin: "1234", email: "david.moreno-castillo@inetum.com", nombre: "David Moreno Castillo" },
   { pin: "5678", email: "test@inetum.com", nombre: "Usuario Test" },
 ];
 
