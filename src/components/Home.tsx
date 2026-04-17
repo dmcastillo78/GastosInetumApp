@@ -41,23 +41,28 @@ const useStyles = makeStyles({
   },
   settingsButton: {
     position: "absolute",
-    top: "20px",
-    right: "20px",
+    top: "16px",
+    right: "16px",
+    zIndex: 10,
   },
   logoutButton: {
     position: "absolute",
-    top: "20px",
-    left: "20px",
+    top: "16px",
+    left: "16px",
+    zIndex: 10,
   },
   header: {
     textAlign: "center",
     marginBottom: "48px",
+    marginTop: "60px",
+    ...shorthands.padding("0", "60px"),
   },
   title: {
-    fontSize: "32px",
+    fontSize: "clamp(20px, 5vw, 32px)",
     fontWeight: 600,
     color: tokens.colorNeutralForeground1,
     marginBottom: "8px",
+    lineHeight: "1.2",
   },
   subtitle: {
     fontSize: "18px",

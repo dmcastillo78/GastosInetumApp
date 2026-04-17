@@ -66,12 +66,15 @@ const useStyles = makeStyles({
     alignItems: "center",
     ...shorthands.gap("12px"),
     marginBottom: "24px",
+    flexWrap: "wrap",
   },
   title: {
-    fontSize: "24px",
+    fontSize: "clamp(18px, 4vw, 24px)",
     fontWeight: 600,
     color: tokens.colorNeutralForeground1,
     margin: 0,
+    flex: "1",
+    minWidth: "150px",
   },
   section: {
     marginBottom: "24px",
@@ -1179,18 +1182,16 @@ Gracias.`
               <span className={styles.fieldLabel}>Viaje</span>
               <span className={styles.fieldValue}>{viajeActivo.numViaje}</span>
             </div>
-            <span className={styles.fieldSeparator}>|</span>
             <div className={styles.viajeField}>
+              <span className={styles.fieldLabel}>Fechas</span>
               <span className={styles.fieldValue}>{formatFecha(viajeActivo.fechaInicio)}</span>
               <span className={styles.fieldLabel}>→</span>
               <span className={styles.fieldValue}>{formatFecha(viajeActivo.fechaFin)}</span>
             </div>
-            <span className={styles.fieldSeparator}>|</span>
             <div className={styles.viajeField}>
               <span className={styles.fieldLabel}>CECO</span>
               <span className={styles.fieldValue}>{viajeActivo.ceco}</span>
             </div>
-            <span className={styles.fieldSeparator}>|</span>
             <Badge appearance="filled" color="success">Activo</Badge>
             <a 
               href={`${BASE_ONEDRIVE}/TicketsGastos/${viajeActivo.numViaje}`}
