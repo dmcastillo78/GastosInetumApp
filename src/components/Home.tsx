@@ -98,10 +98,33 @@ const useStyles = makeStyles({
     fontSize: "14px",
     textAlign: "center",
     maxWidth: "600px",
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
+    ...shorthands.gap("8px", "16px"),
   },
   viajeInfo: {
     fontWeight: 600,
     color: tokens.colorBrandForeground1,
+    whiteSpace: "nowrap",
+  },
+  viajeField: {
+    display: "inline-flex",
+    alignItems: "center",
+    ...shorthands.gap("6px"),
+    whiteSpace: "nowrap",
+  },
+  viajeLabel: {
+    fontSize: "12px",
+    fontWeight: 600,
+    color: tokens.colorNeutralForeground3,
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+  },
+  viajeValue: {
+    fontWeight: 600,
+    color: tokens.colorNeutralForeground1,
   },
   noViaje: {
     color: tokens.colorNeutralForeground3,
@@ -216,7 +239,15 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onLogout }) => {
           </div>
         ) : viajeActivo ? (
           <div className={styles.viajeBanner}>
-            <span className={styles.viajeInfo}>Viaje activo:</span> {viajeActivo.numViaje} | {formatFecha(viajeActivo.fechaInicio)} → {formatFecha(viajeActivo.fechaFin)} | CECO: {viajeActivo.ceco}
+            <span className={styles.viajeInfo}>Viaje activo:</span>
+            <span className={styles.viajeField}>
+              <span className={styles.viajeLabel}>VIAJE</span>
+              <span className={styles.viajeValue}>{viajeActivo.numViaje}</span>
+            </span>
+            <span className={styles.viajeField}>
+              <span className={styles.viajeLabel}>FECHAS</span>
+              <span className={styles.viajeValue}>{formatFecha(viajeActivo.fechaInicio)} → {formatFecha(viajeActivo.fechaFin)}</span>
+            </span>
           </div>
         ) : (
           <p className={styles.noViaje}>Sin viaje activo</p>
