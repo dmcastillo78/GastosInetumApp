@@ -7,6 +7,7 @@ import { AnadirTicket } from "../components/AnadirTicket";
 import { Configuracion } from "../components/Configuracion";
 import { LoginPin } from "../components/LoginPin";
 import { DetalleViaje } from "../components/DetalleViaje";
+import { MisViajes } from "../components/MisViajes";
 
 import "./App.css";
 
@@ -78,10 +79,12 @@ export default function App() {
         return <NuevoViaje onBack={() => handleNavigate("home")} onNavigate={handleNavigate} />;
       case "añadir-ticket":
         return <AnadirTicket onBack={() => handleNavigate("home")} />;
+      case "mis-viajes":
+        return <MisViajes onBack={() => handleNavigate("home")} />;
       case "configuracion":
         return <Configuracion onBack={() => handleNavigate("home")} />;
       case "detalle-viaje":
-        return <DetalleViaje onBack={() => handleNavigate("home")} />;
+        return <DetalleViaje onBack={() => handleNavigate("home")} onNavigate={handleNavigate} />;
       default:
         return <Home onNavigate={handleNavigate} onLogout={handleLogout} />;
     }

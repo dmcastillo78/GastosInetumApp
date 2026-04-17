@@ -8,6 +8,9 @@
         "@fluentui/react-components": "^9.73.7",
         "@fluentui/react-icons": "^2.0.324",
         "@microsoft/teams-js": "^2.52.0",
+        "exceljs": "^4.4.0",
+        "jspdf": "^4.2.1",
+        "jszip": "^3.10.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0"
     },

@@ -48,6 +48,17 @@ const useStyles = makeStyles({
     fontSize: "14px",
     textAlign: "center",
   },
+  viajeInfo: {
+    fontWeight: 600,
+    color: tokens.colorBrandForeground1,
+  },
+  noViaje: {
+    color: tokens.colorNeutralForeground3,
+    fontSize: "14px",
+    fontStyle: "italic",
+    marginBottom: "24px",
+    textAlign: "center",
+  },
   content: {
     display: "flex",
     flexDirection: "column",
@@ -394,10 +405,14 @@ export const AnadirTicket: React.FC<AnadirTicketProps> = ({ onBack }) => {
         </Button>
         <h1 className={styles.title}>Añadir Ticket</h1>
       </div>
-Viaje:
-      <div className={styles.viajeBanner}>
-        <span className={styles.viajeInfo}>Viaje activo:</span> {viajeActivo.numViaje} | {formatFecha(viajeActivo.fechaInicio)} → {formatFecha(viajeActivo.fechaFin)}
-      </div>
+
+      {viajeActivo ? (
+        <div className={styles.viajeBanner}>
+          <span className={styles.viajeInfo}>Viaje activo:</span> {viajeActivo.numViaje} | {formatFecha(viajeActivo.fechaInicio)} → {formatFecha(viajeActivo.fechaFin)} | CECO: {viajeActivo.ceco}
+        </div>
+      ) : (
+        <p className={styles.noViaje}>Sin viaje activo</p>
+      )}
 
       <div className={styles.content}>
         {/* FASE 1: Captura de imagen */}

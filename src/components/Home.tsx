@@ -16,6 +16,7 @@ import {
   Backpack20Regular,
   Settings20Regular,
   SignOut20Regular,
+  History20Regular,
 } from "@fluentui/react-icons";
 import { useViaje } from "../context/ViajeContext";
 
@@ -234,6 +235,16 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onLogout }) => {
           onClick={() => onNavigate("añadir-ticket")}
         >
           Añadir Ticket
+        </Button>
+
+        <Button
+          appearance="primary"
+          size="large"
+          icon={<History20Regular />}
+          className={styles.button}
+          onClick={() => onNavigate("mis-viajes")}
+        >
+          Mis Viajes
         </Button>
 
         <Button

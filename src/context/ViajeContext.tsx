@@ -10,6 +10,11 @@ export interface ViajeActivo {
   fechaInicio: string;
   fechaFin: string;
   ceco: string;
+  sapSubido?: boolean;
+  excelGenerado?: string; // URL del Excel generado en OneDrive
+  urlSAP?: string;
+  cr468_sapsubido?: boolean;
+  sapBase64?: string; // Base64 del archivo SAP para generación ZIP
 }
 
 interface ViajeContextType {
@@ -67,6 +72,10 @@ export const ViajeProvider: React.FC<ViajeProviderProps> = ({ children }) => {
             fechaInicio: data.fechaInicio,
             fechaFin: data.fechaFin,
             ceco: data.ceco,
+            sapSubido: data.sapSubido || data.cr468_sapsubido || false,
+            excelGenerado: data.excelGenerado || data.cr468_excelgenerado || undefined,
+            cr468_sapsubido: data.cr468_sapsubido || false,
+            urlSAP: data.urlSAP || undefined,
           };
           localStorage.setItem(storageKey, JSON.stringify(viaje));
           setViajeActivoState(viaje);
